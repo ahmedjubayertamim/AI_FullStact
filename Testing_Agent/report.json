@@ -1,0 +1,2669 @@
+{
+  "target": {
+    "base_url": "https://backend-agent-test.onrender.com",
+    "tested_at": "2026-05-09T21:19:05Z",
+    "spec_version": "1.0.0",
+    "agent_name": "BackendTestAgent/1.0",
+    "duration_seconds": 36.21
+  },
+  "summary": {
+    "total": 30,
+    "by_severity": {
+      "critical": 3,
+      "high": 7,
+      "medium": 12,
+      "low": 8
+    },
+    "by_category": {
+      "headers_cors": 3,
+      "documentation_drift": 6,
+      "authentication": 1,
+      "authorization": 3,
+      "schema_contract": 2,
+      "business_logic": 3,
+      "input_validation": 2,
+      "error_handling": 3,
+      "rate_limiting": 1,
+      "performance": 1,
+      "http_protocol": 2,
+      "consistency": 3
+    },
+    "endpoints_tested": 18,
+    "endpoints_total": 18,
+    "coverage_percent": 100.0
+  },
+  "findings": [
+    {
+      "id": "BUG-001-headers_cors",
+      "category": "headers_cors",
+      "severity": "medium",
+      "endpoint": "/",
+      "method": "GET",
+      "title": "Missing security headers: HSTS, X-Content-Type-Options, X-Frame-Options, Content-Security-Policy, Referrer-Policy",
+      "description": "Several recommended HTTP security headers are absent on responses. Without HSTS the API can be downgrade-attacked; without X-Content-Type-Options browsers may MIME-sniff JSON; without X-Frame-Options/CSP, embedded contexts are not restricted.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:33 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "48",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "5cd94e2f-8705-4cd5",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bcc53eeed552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "name": "Mini Social API",
+            "version": "1.0.0"
+          },
+          "elapsed_ms": 242.0
+        }
+      },
+      "reproduction": "curl -I https://backend-agent-test.onrender.com/ and inspect response headers.",
+      "expected": "Strict-Transport-Security, X-Content-Type-Options, X-Frame-Options, Content-Security-Policy, Referrer-Policy headers present.",
+      "actual": "Missing: HSTS, X-Content-Type-Options, X-Frame-Options, Content-Security-Policy, Referrer-Policy",
+      "confidence": "high",
+      "suggested_fix": "Add a middleware that injects HSTS, nosniff, frame-deny, CSP and Referrer-Policy headers on every response."
+    },
+    {
+      "id": "BUG-002-headers_cors",
+      "category": "headers_cors",
+      "severity": "high",
+      "endpoint": "/",
+      "method": "GET",
+      "title": "CORS allows wildcard origin together with credentials",
+      "description": "The server returns Access-Control-Allow-Origin: * together with Access-Control-Allow-Credentials: true. Browsers will refuse this combination, but proxies / non-browser clients will not, and it indicates the CORS policy was not threat-modelled.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:33 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "48",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "5cd94e2f-8705-4cd5",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bcc53eeed552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "name": "Mini Social API",
+            "version": "1.0.0"
+          },
+          "elapsed_ms": 242.0
+        }
+      },
+      "reproduction": "GET / and inspect Access-Control-Allow-Origin and Access-Control-Allow-Credentials.",
+      "expected": "ACAO must be a specific origin (or omit ACAC) when credentials are allowed.",
+      "actual": "ACAO='*', ACAC='true'",
+      "confidence": "high",
+      "suggested_fix": "Echo a vetted origin list rather than '*' when credentials are enabled, or set credentials=false."
+    },
+    {
+      "id": "BUG-003-headers_cors",
+      "category": "headers_cors",
+      "severity": "low",
+      "endpoint": "/",
+      "method": "GET",
+      "title": "Server fingerprint disclosed via headers",
+      "description": "Response headers reveal the underlying application server implementation, which assists attackers in selecting CVEs.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:33 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "48",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "5cd94e2f-8705-4cd5",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bcc53eeed552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "name": "Mini Social API",
+            "version": "1.0.0"
+          },
+          "elapsed_ms": 242.0
+        }
+      },
+      "reproduction": "GET / and inspect 'x-render-origin-server' / 'server'.",
+      "expected": "No internal server identification in production responses.",
+      "actual": "Server hint: 'uvicorn'",
+      "confidence": "medium",
+      "suggested_fix": "Strip the x-render-origin-server / Server header at the edge."
+    },
+    {
+      "id": "BUG-004-documentation_drift",
+      "category": "documentation_drift",
+      "severity": "low",
+      "endpoint": "/openapi.json",
+      "method": "GET",
+      "title": "Framework default endpoint /openapi.json exposed but not documented",
+      "description": "/openapi.json is reachable in production. It is not part of the supplied OpenAPI spec but is a FastAPI default. Either disable it in production or list it in the spec.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/openapi.json",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:37 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "1591",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "c2e8b777-15af-484b",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bcdab8e0d552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Mini Social API",
+              "description": "A small social-media API used as a backend testing exam target.",
+              "version": "1.0.0"
+            },
+            "paths": {
+              "/auth/register": {
+                "post": {
+                  "tags": [
+                    "auth"
+                  ],
+                  "summary": "Register",
+                  "description": "Register a new user. Returns an access token on success.",
+                  "operationId": "register_auth_register_post",
+                  "responses": {
+                    "201": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/TokenResponse"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/auth/login": {
+                "post": {
+                  "tags": [
+                    "auth"
+                  ],
+                  "summary": "Login",
+                  "description": "Authenticate with username and password. Returns an access token.",
+                  "operationId": "login_auth_login_post",
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/TokenResponse"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/auth/logout": {
+                "post": {
+                  "tags": [
+                    "auth"
+                  ],
+                  "summary": "Logout",
+                  "operationId": "logout_auth_logout_post",
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/users/me": {
+                "get": {
+                  "tags": [
+                    "users"
+                  ],
+                  "summary": "Get Me",
+                  "operationId": "get_me_users_me_get",
+                  "parameters": [
+                    {
+                      "name": "authorization",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Authorization"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/UserPrivate"
+                          }
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "patch": {
+                  "tags": [
+                    "users"
+                  ],
+                  "summary": "Update Me",
+                  "description": "Update the current user's profile (bio, age).",
+                  "operationId": "update_me_users_me_patch",
+                  "parameters": [
+                    {
+                      "name": "authorization",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Authorization"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/users/{user_id}": {
+                "get": {
+                  "tags": [
+                    "users"
+                  ],
+                  "summary": "Get User",
+                  "operationId": "get_user_users__user_id__get",
+                  "parameters": [
+                    {
+                      "name": "user_id",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "integer",
+                        "title": "User Id"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/UserPublic"
+                          }
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/posts": {
+                "get": {
+                  "tags": [
+                    "posts"
+                  ],
+                  "summary": "List Posts",
+                  "description": "List posts in the public feed, paginated via `limit` and `offset`.",
+                  "operationId": "list_posts_posts_get",
+                  "parameters": [
+                    {
+                      "name": "limit",
+                      "in": "query",
+                      "required": false,
+                      "schema": {
+                        "type": "integer",
+                        "default": 20,
+                        "title": "Limit"
+                      }
+                    },
+                    {
+                      "name": "offset",
+                      "in": "query",
+                      "required": false,
+                      "schema": {
+                        "type": "integer",
+                        "default": 0,
+                        "title": "Offset"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "post": {
+                  "tags": [
+                    "posts"
+                  ],
+                  "summary": "Create Post",
+                  "description": "Create a new post authored by the current user.",
+                  "operationId": "create_post_posts_post",
+                  "parameters": [
+                    {
+                      "name": "authorization",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Authorization"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "201": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/posts/{post_id}": {
+                "get": {
+                  "tags": [
+                    "posts"
+                  ],
+                  "summary": "Get Post",
+                  "description": "Retrieve a single post by id.",
+                  "operationId": "get_post_posts__post_id__get",
+                  "parameters": [
+                    {
+                      "name": "post_id",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "integer",
+                        "title": "Post Id"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "patch": {
+                  "tags": [
+                    "posts"
+                  ],
+                  "summary": "Update Post",
+                  "description": "Update the body of a post owned by the current user.",
+                  "operationId": "update_post_posts__post_id__patch",
+                  "parameters": [
+                    {
+                      "name": "post_id",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "integer",
+                        "title": "Post Id"
+                      }
+                    },
+                    {
+                      "name": "authorization",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Authorization"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "delete": {
+                  "tags": [
+                    "posts"
+                  ],
+                  "summary": "Delete Post",
+                  "description": "Delete a post owned by the current user.",
+                  "operationId": "delete_post_posts__post_id__delete",
+                  "parameters": [
+                    {
+                      "name": "post_id",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "integer",
+                        "title": "Post Id"
+                      }
+                    },
+                    {
+                      "name": "authorization",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Authorization"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/posts/{post_id}/comments": {
+                "get": {
+                  "tags": [
+                    "comments"
+                  ],
+                  "summary": "List Comments",
+                  "operationId": "list_comments_posts__post_id__comments_get",
+                  "parameters": [
+                    {
+                      "name": "post_id",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "integer",
+                        "title": "Post Id"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CommentResponse"
+                            },
+                            "title": "Response List Comments Posts  Post Id  Comments Get"
+                          }
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "post": {
+                  "tags": [
+                    "comments"
+                  ],
+                  "summary": "Create Comment",
+                  "operationId": "create_comment_posts__post_id__comments_post",
+                  "parameters": [
+                    {
+                      "name": "post_id",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "integer",
+                        "title": "Post Id"
+                      }
+                    },
+                    {
+                      "name": "authorization",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Authorization"
+                      }
+                    }
+                  ],
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/CommentCreate"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "201": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/CommentResponse"
+                          }
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/posts/{post_id}/like": {
+                "post": {
+                  "tags": [
+                    "likes"
+                  ],
+                  "summary": "Like Post",
+                  "description": "Like a post on behalf of the current user.",
+                  "operationId": "like_post_posts__post_id__like_post",
+                  "parameters": [
+                    {
+                      "name": "post_id",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "integer",
+                        "title": "Post Id"
+                      }
+                    },
+                    {
+                      "name": "authorization",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Authorization"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "delete": {
+                  "tags": [
+                    "likes"
+                  ],
+                  "summary": "Unlike Post",
+                  "operationId": "unlike_post_posts__post_id__like_delete",
+                  "parameters": [
+                    {
+                      "name": "post_id",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "integer",
+                        "title": "Post Id"
+                      }
+                    },
+                    {
+                      "name": "authorization",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Authorization"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/users/{user_id}/follow": {
+                "post": {
+                  "tags": [
+                    "follows"
+                  ],
+                  "summary": "Follow",
+                  "description": "Follow the user with the given id.",
+                  "operationId": "follow_users__user_id__follow_post",
+                  "parameters": [
+                    {
+                      "name": "user_id",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "integer",
+                        "title": "User Id"
+                      }
+                    },
+                    {
+                      "name": "authorization",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Authorization"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "delete": {
+                  "tags": [
+                    "follows"
+                  ],
+                  "summary": "Unfollow",
+                  "operationId": "unfollow_users__user_id__follow_delete",
+                  "parameters": [
+                    {
+                      "name": "user_id",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "integer",
+                        "title": "User Id"
+                      }
+                    },
+                    {
+                      "name": "authorization",
+                      "in": "header",
+                      "required": false,
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Authorization"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    },
+                    "422": {
+                      "description": "Validation Error",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/HTTPValidationError"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/": {
+                "get": {
+                  "tags": [
+                    "meta"
+                  ],
+                  "summary": "Root",
+                  "operationId": "root__get",
+                  "responses": {
+                    "200": {
+                      "description": "Successful Response",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "components": {
+              "schemas": {
+                "CommentCreate": {
+                  "properties": {
+                    "body": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "minLength": 1,
+                      "title": "Body"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "body"
+                  ],
+                  "title": "CommentCreate"
+                },
+                "CommentResponse": {
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "title": "Id"
+                    },
+                    "post_id": {
+                      "type": "integer",
+                      "title": "Post Id"
+                    },
+                    "author_id": {
+                      "type": "integer",
+                      "title": "Author Id"
+                    },
+                    "body": {
+                      "type": "string",
+                      "title": "Body"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "post_id",
+                    "author_id",
+                    "body"
+                  ],
+                  "title": "CommentResponse"
+                },
+                "HTTPValidationError": {
+                  "properties": {
+                    "detail": {
+                      "items": {
+                        "$ref": "#/components/schemas/ValidationError"
+                      },
+                      "type": "array",
+                      "title": "Detail"
+                    }
+                  },
+                  "type": "object",
+                  "title": "HTTPValidationError"
+                },
+                "TokenResponse": {
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "title": "Access Token"
+                    },
+                    "token_type": {
+                      "type": "string",
+                      "title": "Token Type",
+                      "default": "bearer"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "access_token"
+                  ],
+                  "title": "TokenResponse"
+                },
+                "UserPrivate": {
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "title": "Id"
+                    },
+                    "username": {
+                      "type": "string",
+                      "title": "Username"
+                    },
+                    "email": {
+                      "type": "string",
+                      "title": "Email"
+                    },
+                    "age": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Age"
+                    },
+                    "role": {
+                      "type": "string",
+                      "title": "Role"
+                    },
+                    "bio": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Bio"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "username",
+                    "email",
+                    "role"
+                  ],
+                  "title": "UserPrivate"
+                },
+                "UserPublic": {
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "title": "Id"
+                    },
+                    "username": {
+                      "type": "string",
+                      "title": "Username"
+                    },
+                    "bio": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "title": "Bio"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "username"
+                  ],
+                  "title": "UserPublic"
+                },
+                "ValidationError": {
+                  "properties": {
+                    "loc": {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "integer"
+                          }
+                        ]
+                      },
+                      "type": "array",
+                      "title": "Location"
+                    },
+                    "msg": {
+                      "type": "string",
+                      "title": "Message"
+                    },
+                    "type": {
+                      "type": "string",
+                      "title": "Error Type"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                  ],
+                  "title": "ValidationError"
+                }
+              }
+            }
+          },
+          "elapsed_ms": 246.0
+        }
+      },
+      "reproduction": "curl -i https://backend-agent-test.onrender.com/openapi.json",
+      "expected": "/openapi.json declared in openapi.json or disabled.",
+      "actual": "HTTP 200 returned for /openapi.json",
+      "confidence": "high",
+      "suggested_fix": "Set docs_url=None / redoc_url=None in production or document them."
+    },
+    {
+      "id": "BUG-005-documentation_drift",
+      "category": "documentation_drift",
+      "severity": "low",
+      "endpoint": "/docs",
+      "method": "GET",
+      "title": "Framework default endpoint /docs exposed but not documented",
+      "description": "/docs is reachable in production. It is not part of the supplied OpenAPI spec but is a FastAPI default. Either disable it in production or list it in the spec.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/docs",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:37 GMT",
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": "424",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "d5f6a240-6267-4ddf",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bcdc499ed552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": "\n    <!DOCTYPE html>\n    <html>\n    <head>\n    <link type=\"text/css\" rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css\">\n    <link rel=\"shortcut icon\" href=\"https://fastapi.tiangolo.com/img/favicon.png\">\n    <title>Mini Social API - Swagger UI</title>\n    </head>\n    <body>\n    <div id=\"swagger-ui\">\n    </div>\n    <script src=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js\"></script>\n    <!-- `SwaggerUIBundle` is now available on the page -->\n    <script>\n    const ui = SwaggerUIBundle({\n        url: '/openapi.json',\n    \"dom_id\": \"#swagger-ui\",\n\"layout\": \"BaseLayout\",\n\"deepLinking\": true,\n\"showExtensions\": true,\n\"showCommonExtensions\": true,\noauth2RedirectUrl: window.location.origin + '/docs/oauth2-redirect',\n    presets: [\n        SwaggerUIBundle.presets.apis,\n        SwaggerUIBundle.SwaggerUIStandalonePreset\n        ],\n    })\n    </script>\n    </body>\n    </html>\n    ",
+          "elapsed_ms": 247.7
+        }
+      },
+      "reproduction": "curl -i https://backend-agent-test.onrender.com/docs",
+      "expected": "/docs declared in openapi.json or disabled.",
+      "actual": "HTTP 200 returned for /docs",
+      "confidence": "high",
+      "suggested_fix": "Set docs_url=None / redoc_url=None in production or document them."
+    },
+    {
+      "id": "BUG-006-documentation_drift",
+      "category": "documentation_drift",
+      "severity": "low",
+      "endpoint": "/redoc",
+      "method": "GET",
+      "title": "Framework default endpoint /redoc exposed but not documented",
+      "description": "/redoc is reachable in production. It is not part of the supplied OpenAPI spec but is a FastAPI default. Either disable it in production or list it in the spec.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/redoc",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:37 GMT",
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": "448",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "201e758f-ecd3-4931",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bcddda35d552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": "\n    <!DOCTYPE html>\n    <html>\n    <head>\n    <title>Mini Social API - ReDoc</title>\n    <!-- needed for adaptive design -->\n    <meta charset=\"utf-8\"/>\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700\" rel=\"stylesheet\">\n    \n    <link rel=\"shortcut icon\" href=\"https://fastapi.tiangolo.com/img/favicon.png\">\n    <!--\n    ReDoc doesn't change outer page styles\n    -->\n    <style>\n      body {\n        margin: 0;\n        padding: 0;\n      }\n    </style>\n    </head>\n    <body>\n    <noscript>\n        ReDoc requires Javascript to function. Please enable it to browse the documentation.\n    </noscript>\n    <redoc spec-url=\"/openapi.json\"></redoc>\n    <script src=\"https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js\"> </script>\n    </body>\n    </html>\n    ",
+          "elapsed_ms": 234.4
+        }
+      },
+      "reproduction": "curl -i https://backend-agent-test.onrender.com/redoc",
+      "expected": "/redoc declared in openapi.json or disabled.",
+      "actual": "HTTP 200 returned for /redoc",
+      "confidence": "high",
+      "suggested_fix": "Set docs_url=None / redoc_url=None in production or document them."
+    },
+    {
+      "id": "BUG-007-authentication",
+      "category": "authentication",
+      "severity": "high",
+      "endpoint": "/auth/logout",
+      "method": "POST",
+      "title": "Tokens remain valid after /auth/logout",
+      "description": "After calling POST /auth/logout the same access token is still accepted by /users/me. Logout is therefore a no-op (no server-side revocation), which defeats user expectations for a session ending.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/users/me",
+          "headers": {
+            "Authorization": "Bearer eyJhbGci...REDACTED"
+          },
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:43 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "81",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "90e34a0e-0267-475a",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd0279add552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 230,
+            "username": "alice_3ea4c7a8",
+            "email": "alice_3ea4c7a8@example.test",
+            "age": null,
+            "role": "user",
+            "bio": ""
+          },
+          "elapsed_ms": 243.4
+        }
+      },
+      "reproduction": "POST /auth/logout, then GET /users/me with same token",
+      "expected": "401 Unauthorized after logout (token revoked).",
+      "actual": "GET /users/me still returns 200",
+      "confidence": "high",
+      "suggested_fix": "Track a server-side token denylist or rotate a per-session secret on logout."
+    },
+    {
+      "id": "BUG-008-authorization",
+      "category": "authorization",
+      "severity": "critical",
+      "endpoint": "/posts/{post_id}",
+      "method": "PATCH",
+      "title": "IDOR: a non-owner can PATCH another user's post",
+      "description": "User Bob successfully edited a post authored by Alice. Posts should be editable only by their author.",
+      "evidence": {
+        "request": {
+          "method": "PATCH",
+          "url": "https://backend-agent-test.onrender.com/posts/341",
+          "headers": {
+            "Authorization": "Bearer eyJhbGci...REDACTED",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "body": "owned by bob"
+          }
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:45 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "108",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "43f7637e-1ca0-4c8e",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd0b5d66d552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 341,
+            "author_id": 230,
+            "body": "owned by bob",
+            "created_at": "2026-05-06T12:00:00Z",
+            "like_count": 0,
+            "author": "alice_3ea4c7a8"
+          },
+          "elapsed_ms": 258.8
+        }
+      },
+      "reproduction": "Login as bob, PATCH /posts/<alice_post_id> with new body.",
+      "expected": "403 Forbidden (non-owner) or 404",
+      "actual": "200 OK",
+      "confidence": "high",
+      "suggested_fix": "Compare post.author_id to current user before applying mutation."
+    },
+    {
+      "id": "BUG-009-schema_contract",
+      "category": "schema_contract",
+      "severity": "critical",
+      "endpoint": "/users/me",
+      "method": "PATCH",
+      "title": "PATCH /users/me response leaks sensitive fields: ['password_hash']",
+      "description": "The PATCH /users/me response body contains sensitive fields ['password_hash']. UserPrivate explicitly does not declare a password / hash field \u2014 these must never be serialized to the client.",
+      "evidence": {
+        "request": {
+          "method": "PATCH",
+          "url": "https://backend-agent-test.onrender.com/users/me",
+          "headers": {
+            "Authorization": "Bearer eyJhbGci...REDACTED",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "role": "admin",
+            "id": 1,
+            "email": "hacker@example.com"
+          }
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:45 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "149",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "0e646f16-230b-4e5a",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd0fff69d552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 230,
+            "username": "alice_3ea4c7a8",
+            "email": "hacker@example.com",
+            "password_hash": "$2b$12$YqWIGzLlnT5yY6QQ2dMNsuEJVCBNnI4JvMHb3qgnSZ2EhilkKrfO2",
+            "age": null,
+            "role": "admin",
+            "bio": ""
+          },
+          "elapsed_ms": 252.3
+        }
+      },
+      "reproduction": "PATCH /users/me with any body, inspect response keys.",
+      "expected": "UserPrivate fields only (id, username, email, role, bio, age).",
+      "actual": "Leaked fields: ['password_hash']",
+      "confidence": "high",
+      "spec_reference": "components.schemas.UserPrivate",
+      "suggested_fix": "Use a response_model that excludes the password_hash column."
+    },
+    {
+      "id": "BUG-010-authorization",
+      "category": "authorization",
+      "severity": "critical",
+      "endpoint": "/users/me",
+      "method": "PATCH",
+      "title": "Mass assignment: PATCH /users/me allows role escalation",
+      "description": "Submitting {role: 'admin'} in PATCH /users/me sets the user's role to admin. The PATCH endpoint should only accept whitelisted fields (bio, age).",
+      "evidence": {
+        "request": {
+          "method": "PATCH",
+          "url": "https://backend-agent-test.onrender.com/users/me",
+          "headers": {
+            "Authorization": "Bearer eyJhbGci...REDACTED",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "role": "admin",
+            "id": 1,
+            "email": "hacker@example.com"
+          }
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:46 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "83",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "3f144f9c-e4fd-4ec2",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd118801d552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 230,
+            "username": "alice_3ea4c7a8",
+            "email": "hacker@example.com",
+            "age": null,
+            "role": "admin",
+            "bio": ""
+          },
+          "elapsed_ms": 257.0
+        }
+      },
+      "reproduction": "PATCH /users/me with body {\"role\":\"admin\"}",
+      "expected": "role unchanged; PATCH only accepts {bio, age}.",
+      "actual": "role is now 'admin'",
+      "confidence": "high",
+      "suggested_fix": "Define a strict UserUpdate Pydantic model that only includes editable fields."
+    },
+    {
+      "id": "BUG-011-authorization",
+      "category": "authorization",
+      "severity": "high",
+      "endpoint": "/users/me",
+      "method": "PATCH",
+      "title": "Mass assignment: PATCH /users/me allows email change",
+      "description": "PATCH /users/me only documents bio/age as editable; the API allowed the email field to be overwritten as well.",
+      "evidence": {
+        "request": {
+          "method": "PATCH",
+          "url": "https://backend-agent-test.onrender.com/users/me",
+          "headers": {
+            "Authorization": "Bearer eyJhbGci...REDACTED",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "role": "admin",
+            "id": 1,
+            "email": "hacker@example.com"
+          }
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:46 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "83",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "3f144f9c-e4fd-4ec2",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd118801d552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 230,
+            "username": "alice_3ea4c7a8",
+            "email": "hacker@example.com",
+            "age": null,
+            "role": "admin",
+            "bio": ""
+          },
+          "elapsed_ms": 257.0
+        }
+      },
+      "reproduction": "PATCH /users/me with body {\"email\":\"x@y.z\"}",
+      "expected": "email unchanged",
+      "actual": "email is now 'hacker@example.com'",
+      "confidence": "high",
+      "spec_reference": "paths./users/me.patch (description: bio, age)",
+      "suggested_fix": "Restrict editable fields to {bio, age} via a typed Pydantic model."
+    },
+    {
+      "id": "BUG-012-business_logic",
+      "category": "business_logic",
+      "severity": "medium",
+      "endpoint": "/users/{user_id}/follow",
+      "method": "POST",
+      "title": "A user can follow themselves",
+      "description": "POST /users/<own_id>/follow succeeds; this is a logic flaw \u2014 a user cannot meaningfully follow themselves.",
+      "evidence": {
+        "request": {
+          "method": "POST",
+          "url": "https://backend-agent-test.onrender.com/users/230/follow",
+          "headers": {
+            "Authorization": "Bearer eyJhbGci...REDACTED"
+          },
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:46 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "25",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "db8709ab-912b-4532",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd1328bfd552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "detail": "followed"
+          },
+          "elapsed_ms": 243.6
+        }
+      },
+      "reproduction": "POST /users/<own_id>/follow",
+      "expected": "400 Bad Request \u2014 cannot follow self.",
+      "actual": "200",
+      "confidence": "high",
+      "suggested_fix": "Reject follow when target_id == requester_id."
+    },
+    {
+      "id": "BUG-013-business_logic",
+      "category": "business_logic",
+      "severity": "medium",
+      "endpoint": "/posts/{post_id}/like",
+      "method": "POST",
+      "title": "Liking the same post twice increments like count",
+      "description": "After liking the same post twice as a single user, like_count=2 (>1).",
+      "evidence": {
+        "request": {
+          "method": "POST",
+          "url": "https://backend-agent-test.onrender.com/posts/342/like",
+          "headers": {
+            "Authorization": "Bearer eyJhbGci...REDACTED"
+          },
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:47 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "115",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "e09b04c7-1f23-4c5d",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd17bb19d552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 342,
+            "author_id": 230,
+            "body": "alice post v2 378f17",
+            "created_at": "2026-05-06T12:00:00Z",
+            "like_count": 2,
+            "authorName": "alice_3ea4c7a8"
+          },
+          "elapsed_ms": 240.5
+        }
+      },
+      "reproduction": "POST /posts/<id>/like twice with the same user.",
+      "expected": "Idempotent: each user contributes at most 1 like.",
+      "actual": "like count=2",
+      "confidence": "high",
+      "suggested_fix": "Make the like operation a uniqueness-constrained insert keyed by (user_id, post_id)."
+    },
+    {
+      "id": "BUG-014-business_logic",
+      "category": "business_logic",
+      "severity": "medium",
+      "endpoint": "/posts/{post_id}/like",
+      "method": "POST",
+      "title": "Can like a non-existent post",
+      "description": "POST /posts/999999999/like returned a success status although the post does not exist.",
+      "evidence": {
+        "request": {
+          "method": "POST",
+          "url": "https://backend-agent-test.onrender.com/posts/999999999/like",
+          "headers": {
+            "Authorization": "Bearer eyJhbGci...REDACTED"
+          },
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:47 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "22",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "e9bbf15f-1bd7-4856",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd1c4d03d552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "detail": "liked"
+          },
+          "elapsed_ms": 246.2
+        }
+      },
+      "reproduction": "POST /posts/999999999/like",
+      "expected": "404 Not Found",
+      "actual": "200",
+      "confidence": "high"
+    },
+    {
+      "id": "BUG-015-input_validation",
+      "category": "input_validation",
+      "severity": "medium",
+      "endpoint": "/posts",
+      "method": "POST",
+      "title": "POST /posts accepts a non-string `body`",
+      "description": "Sending `body=12345` (integer) is accepted and stored as the integer 12345. Posts are documented as string-bodied content; the API does not validate the type and the value is round-tripped as an integer in the response.",
+      "evidence": {
+        "request": {
+          "method": "POST",
+          "url": "https://backend-agent-test.onrender.com/posts",
+          "headers": {
+            "Authorization": "Bearer eyJhbGci...REDACTED",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "body": 12345
+          }
+        },
+        "response": {
+          "status": 201,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:48 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "70",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "7ffac3a1-e887-4ce9",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd20bf46d552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 343,
+            "author_id": 230,
+            "body": 12345,
+            "like_count": 0,
+            "author": "alice_3ea4c7a8"
+          },
+          "elapsed_ms": 234.0
+        }
+      },
+      "reproduction": "curl -X POST $BASE/posts -d '{\"body\":12345}' -H \"Authorization: Bearer $TOKEN\"",
+      "expected": "422 Unprocessable Entity",
+      "actual": "201 stored body type=int",
+      "confidence": "high"
+    },
+    {
+      "id": "BUG-016-error_handling",
+      "category": "error_handling",
+      "severity": "high",
+      "endpoint": "/posts",
+      "method": "GET",
+      "title": "Negative `limit` query parameter triggers a 500",
+      "description": "GET /posts?limit=-1 returns a 500 Internal Server Error rather than a validation error. Out-of-range query parameters should be rejected at the validation layer with 422.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/posts",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 500,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:49 GMT",
+            "Content-Type": "text/plain; charset=utf-8",
+            "Content-Length": "25",
+            "Connection": "keep-alive",
+            "Content-Encoding": "br",
+            "rndr-id": "90bd27c4-6529-4f93",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd26c9bcd552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": "Internal Server Error",
+          "elapsed_ms": 245.6
+        }
+      },
+      "reproduction": "curl -i \"$BASE/posts?limit=-1\"",
+      "expected": "422 Unprocessable Entity",
+      "actual": "500 Internal Server Error",
+      "confidence": "high",
+      "suggested_fix": "Apply Query(..., ge=0) on the limit parameter, and similarly bound offset."
+    },
+    {
+      "id": "BUG-017-input_validation",
+      "category": "input_validation",
+      "severity": "medium",
+      "endpoint": "/users/me",
+      "method": "PATCH",
+      "title": "Negative age accepted on PATCH /users/me",
+      "description": "Setting age to -42 is accepted and persisted; age should be >=0.",
+      "evidence": {
+        "request": {
+          "method": "PATCH",
+          "url": "https://backend-agent-test.onrender.com/users/me",
+          "headers": {
+            "Authorization": "Bearer eyJhbGci...REDACTED",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "age": -42
+          }
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:49 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "82",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "c0403da9-9238-4d13",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd29caeed552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 230,
+            "username": "alice_3ea4c7a8",
+            "email": "hacker@example.com",
+            "age": -42,
+            "role": "admin",
+            "bio": ""
+          },
+          "elapsed_ms": 242.4
+        }
+      },
+      "reproduction": "PATCH /users/me with {\"age\":-42}",
+      "expected": "422 Validation Error",
+      "actual": "age stored as -42",
+      "confidence": "high",
+      "suggested_fix": "Add a Field(ge=0) constraint on UserUpdate.age."
+    },
+    {
+      "id": "BUG-018-error_handling",
+      "category": "error_handling",
+      "severity": "medium",
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "title": "Form-encoded body to /auth/register returns 500",
+      "description": "Sending a form-encoded body returns a 500 \u2014 the API should respond 415 Unsupported Media Type or 422.",
+      "evidence": {
+        "request": {
+          "method": "POST",
+          "url": "https://backend-agent-test.onrender.com/auth/register",
+          "headers": {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          "body": "<raw>"
+        },
+        "response": {
+          "status": 500,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:50 GMT",
+            "Content-Type": "text/plain; charset=utf-8",
+            "Content-Length": "25",
+            "Connection": "keep-alive",
+            "Content-Encoding": "br",
+            "rndr-id": "f8b44bc7-28dc-448d",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd2b4bb1d552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": "Internal Server Error",
+          "elapsed_ms": 245.1
+        }
+      },
+      "reproduction": "curl -X POST $BASE/auth/register --data-urlencode username=foo --data-urlencode password=bar",
+      "expected": "415 / 422",
+      "actual": "500 Internal Server Error",
+      "confidence": "high"
+    },
+    {
+      "id": "BUG-019-error_handling",
+      "category": "error_handling",
+      "severity": "high",
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "title": "Malformed JSON triggers a 5xx",
+      "description": "Garbage JSON in the request body should be a 400/422, not a 500.",
+      "evidence": {
+        "request": {
+          "method": "POST",
+          "url": "https://backend-agent-test.onrender.com/auth/login",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "<raw>"
+        },
+        "response": {
+          "status": 500,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:18:50 GMT",
+            "Content-Type": "text/plain; charset=utf-8",
+            "Content-Length": "25",
+            "Connection": "keep-alive",
+            "Content-Encoding": "br",
+            "rndr-id": "aff60cb9-9e22-4ad6",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd2cec6ad552-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": "Internal Server Error",
+          "elapsed_ms": 248.0
+        }
+      },
+      "reproduction": "curl -X POST $BASE/auth/login -H \"Content-Type: application/json\" --data-binary \"{not-json\"",
+      "expected": "400 / 422",
+      "actual": "500",
+      "confidence": "high"
+    },
+    {
+      "id": "BUG-020-rate_limiting",
+      "category": "rate_limiting",
+      "severity": "medium",
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "title": "No rate limiting observed on /auth/login",
+      "description": "20 failed login attempts in a tight burst all received non-429 responses. There is no apparent rate limit on the login endpoint, which enables brute-force credential attacks.",
+      "evidence": {
+        "request": {
+          "method": "POST",
+          "url": "https://backend-agent-test.onrender.com/auth/login",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "username": "alice_3ea4c7a8",
+            "password": "wrong"
+          }
+        },
+        "response": {
+          "status": 401,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:19:01 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "36",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "e7bfebf3-ca04-4476",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd5dd803f3d2-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "detail": "invalid credentials"
+          },
+          "elapsed_ms": 3584.7
+        }
+      },
+      "reproduction": "Fire 20 concurrent POST /auth/login attempts with a wrong password.",
+      "expected": "At least some responses with 429 Too Many Requests after a sustained burst.",
+      "actual": "Status codes: [401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401, 401]",
+      "confidence": "medium",
+      "suggested_fix": "Add per-IP and per-username rate limiting on /auth/login."
+    },
+    {
+      "id": "BUG-021-performance",
+      "category": "performance",
+      "severity": "low",
+      "endpoint": "/posts",
+      "method": "GET",
+      "title": "No caching/validation headers on /posts",
+      "description": "Public GET endpoints expose no Cache-Control, ETag or Last-Modified, preventing client and proxy caching.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/posts",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:19:04 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "326",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "923e324a-7e88-4e68",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd849d4bd77b-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": [
+            {
+              "id": 2,
+              "author_id": 1,
+              "body": "Test post content",
+              "created_at": "2026-05-01T12:00:00Z",
+              "like_count": "38",
+              "author": "alice"
+            },
+            {
+              "id": 3,
+              "author_id": 2,
+              "body": "REPRO PATCH FROM ALICE",
+              "created_at": "2026-05-01T12:00:00Z",
+              "like_count": "0",
+              "author": "bob"
+            },
+            {
+              "id": 4,
+              "author_id": 2,
+              "body": "Bob loves coffee",
+              "created_at": "2026-05-01T12:00:00Z",
+              "like_count": "0",
+              "author": "bob"
+            },
+            {
+              "id": 5,
+              "author_id": 3,
+              "body": "Carol here, just joined",
+              "created_at": "2026-05-01T12:00:00Z",
+              "like_count": "0",
+              "author": "carol"
+            },
+            {
+              "id": 6,
+              "author_id": 1,
+              "body": "",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            },
+            {
+              "id": 7,
+              "author_id": 1,
+              "body": "",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            },
+            {
+              "id": 8,
+              "author_id": 1,
+              "body": "Hacked by Bob",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            },
+            {
+              "id": 9,
+              "author_id": 1,
+              "body": "test post",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "2",
+              "author": "alice"
+            },
+            {
+              "id": 11,
+              "author_id": 1,
+              "body": "this is a test",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            },
+            {
+              "id": 12,
+              "author_id": 1,
+              "body": "This is Alice test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            },
+            {
+              "id": 13,
+              "author_id": 2,
+              "body": "This is Bob test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "bob"
+            },
+            {
+              "id": 14,
+              "author_id": 1,
+              "body": "This is Alice test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            },
+            {
+              "id": 15,
+              "author_id": 2,
+              "body": "This is Bob test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "bob"
+            },
+            {
+              "id": 16,
+              "author_id": 1,
+              "body": "This is Alice test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            },
+            {
+              "id": 17,
+              "author_id": 2,
+              "body": "This is Bob test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "bob"
+            },
+            {
+              "id": 18,
+              "author_id": 1,
+              "body": "This is Alice test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            },
+            {
+              "id": 19,
+              "author_id": 2,
+              "body": "This is Bob test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "bob"
+            },
+            {
+              "id": 20,
+              "author_id": 1,
+              "body": "This is Alice test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            },
+            {
+              "id": 21,
+              "author_id": 2,
+              "body": "This is Bob test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "bob"
+            },
+            {
+              "id": 22,
+              "author_id": 1,
+              "body": "This is Alice test post for agent testing.",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            }
+          ],
+          "elapsed_ms": 231.3
+        }
+      },
+      "reproduction": "curl -I $BASE/posts",
+      "expected": "Cache-Control or ETag/Last-Modified set on read-only collections.",
+      "actual": "No caching-related headers",
+      "confidence": "medium"
+    },
+    {
+      "id": "BUG-022-http_protocol",
+      "category": "http_protocol",
+      "severity": "medium",
+      "endpoint": "/posts",
+      "method": "OPTIONS",
+      "title": "OPTIONS preflight reflects wildcard ACAO for arbitrary Origin",
+      "description": "A preflight from Origin 'https://evil.example' is answered with Access-Control-Allow-Origin: *, accepting any cross-origin caller.",
+      "evidence": {
+        "request": {
+          "method": "OPTIONS",
+          "url": "https://backend-agent-test.onrender.com/posts",
+          "headers": {
+            "Origin": "https://evil.example",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "authorization,content-type"
+          },
+          "body": null
+        },
+        "response": {
+          "status": 405,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:19:04 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "35",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "allow": "GET",
+            "Content-Encoding": "br",
+            "rndr-id": "ed225beb-1e99-49e0",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd86185ad77b-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "detail": "Method Not Allowed"
+          },
+          "elapsed_ms": 228.2
+        }
+      },
+      "reproduction": "curl -X OPTIONS $BASE/posts -H \"Origin: https://evil.example\" -H \"Access-Control-Request-Method: POST\"",
+      "expected": "ACAO restricted to a vetted origin list.",
+      "actual": "ACAO=*",
+      "confidence": "high"
+    },
+    {
+      "id": "BUG-023-http_protocol",
+      "category": "http_protocol",
+      "severity": "low",
+      "endpoint": "/posts",
+      "method": "HEAD",
+      "title": "HEAD not supported on /posts",
+      "description": "HEAD on /posts returns 405. RFC 9110 expects HEAD to be supported wherever GET is.",
+      "evidence": {
+        "request": {
+          "method": "HEAD",
+          "url": "https://backend-agent-test.onrender.com/posts",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 405,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:19:05 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "1",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "allow": "GET",
+            "Content-Encoding": "br",
+            "rndr-id": "7fa4e2e3-3c7d-48c6",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd877ae7d77b-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": "",
+          "elapsed_ms": 289.0
+        }
+      },
+      "reproduction": "curl -I $BASE/posts",
+      "expected": "200 with no body",
+      "actual": "405 Method Not Allowed",
+      "confidence": "medium"
+    },
+    {
+      "id": "BUG-024-documentation_drift",
+      "category": "documentation_drift",
+      "severity": "medium",
+      "endpoint": "/users/me",
+      "method": "GET",
+      "title": "OpenAPI declares 'authorization' as an optional header parameter",
+      "description": "The spec lists 'authorization' as an optional header parameter rather than declaring an HTTP-Bearer security scheme. This misrepresents the auth requirements: the endpoint does require a token in practice.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/users/me",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 0,
+          "body": "spec-only finding"
+        }
+      },
+      "reproduction": "Inspect openapi.json paths./users/me.get.parameters",
+      "expected": "securitySchemes.bearerAuth declared and required on protected paths.",
+      "actual": "Authorization listed as an optional Header parameter.",
+      "confidence": "high",
+      "spec_reference": "paths./users/me.get.parameters",
+      "suggested_fix": "Define components.securitySchemes.bearerAuth and apply security: [{bearerAuth: []}] on protected operations."
+    },
+    {
+      "id": "BUG-025-documentation_drift",
+      "category": "documentation_drift",
+      "severity": "low",
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "title": "/auth/register has no documented requestBody",
+      "description": "/auth/register requires username/password/email but the spec declares no requestBody \u2014 clients cannot generate a typed payload from the spec.",
+      "evidence": {
+        "request": {
+          "method": "POST",
+          "url": "https://backend-agent-test.onrender.com/auth/register",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 0,
+          "body": "spec-only finding"
+        }
+      },
+      "reproduction": "Inspect openapi.json paths./auth/register.post",
+      "expected": "requestBody with a schema describing username/password/email.",
+      "actual": "No requestBody declared in spec.",
+      "confidence": "high",
+      "spec_reference": "paths./auth/register.post"
+    },
+    {
+      "id": "BUG-026-documentation_drift",
+      "category": "documentation_drift",
+      "severity": "low",
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "title": "/auth/login has no documented requestBody",
+      "description": "/auth/login requires username/password/email but the spec declares no requestBody \u2014 clients cannot generate a typed payload from the spec.",
+      "evidence": {
+        "request": {
+          "method": "POST",
+          "url": "https://backend-agent-test.onrender.com/auth/login",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 0,
+          "body": "spec-only finding"
+        }
+      },
+      "reproduction": "Inspect openapi.json paths./auth/login.post",
+      "expected": "requestBody with a schema describing username/password/email.",
+      "actual": "No requestBody declared in spec.",
+      "confidence": "high",
+      "spec_reference": "paths./auth/login.post"
+    },
+    {
+      "id": "BUG-027-consistency",
+      "category": "consistency",
+      "severity": "medium",
+      "endpoint": "/posts/{post_id}",
+      "method": "GET",
+      "title": "Post shape differs between list and detail endpoints",
+      "description": "GET /posts (list) and GET /posts/{id} (detail) return different sets of fields \u2014 list keys=['author', 'author_id', 'body', 'created_at', 'id', 'like_count'], detail keys=['authorName', 'author_id', 'body', 'created_at', 'id', 'like_count']. Clients are forced to branch on which endpoint they used.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/posts/2",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:19:05 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "105",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "8ddc5d00-3904-4a7f",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd8dcde1d77b-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 2,
+            "author_id": 1,
+            "body": "Test post content",
+            "created_at": "2026-05-01T12:00:00Z",
+            "like_count": 38,
+            "authorName": "alice"
+          },
+          "elapsed_ms": 231.2
+        }
+      },
+      "reproduction": "Compare keys of GET /posts[0] vs GET /posts/<id>",
+      "expected": "Same canonical post shape from both endpoints.",
+      "actual": "list-only=['author'], detail-only=['authorName']",
+      "confidence": "high"
+    },
+    {
+      "id": "BUG-028-consistency",
+      "category": "consistency",
+      "severity": "medium",
+      "endpoint": "/posts",
+      "method": "GET",
+      "title": "Author display field is named differently in list vs detail",
+      "description": "GET /posts uses ['author'] but GET /posts/{id} uses ['authorName']. The same logical field has two different names depending on the endpoint.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/posts",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:19:05 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "105",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "8ddc5d00-3904-4a7f",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd8dcde1d77b-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 2,
+            "author_id": 1,
+            "body": "Test post content",
+            "created_at": "2026-05-01T12:00:00Z",
+            "like_count": 38,
+            "authorName": "alice"
+          },
+          "elapsed_ms": 231.2
+        }
+      },
+      "reproduction": "Compare /posts[0] and /posts/<id>; note author key naming.",
+      "expected": "Consistent field name (e.g. 'author_username') everywhere.",
+      "actual": "list=['author'], detail=['authorName']",
+      "confidence": "high",
+      "suggested_fix": "Pick one canonical name and add a deprecated alias if needed."
+    },
+    {
+      "id": "BUG-029-consistency",
+      "category": "consistency",
+      "severity": "high",
+      "endpoint": "/posts",
+      "method": "GET",
+      "title": "like_count has different types between list and detail",
+      "description": "GET /posts returns like_count as str (value='38'), GET /posts/{id} returns it as int (value=38). Strongly-typed clients will fail on whichever payload they did not expect.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/posts",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:19:05 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "105",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "8ddc5d00-3904-4a7f",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd8dcde1d77b-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": {
+            "id": 2,
+            "author_id": 1,
+            "body": "Test post content",
+            "created_at": "2026-05-01T12:00:00Z",
+            "like_count": 38,
+            "authorName": "alice"
+          },
+          "elapsed_ms": 231.2
+        }
+      },
+      "reproduction": "Inspect type(like_count) on /posts vs /posts/<id>",
+      "expected": "like_count is an integer in both responses.",
+      "actual": "list:str detail:int",
+      "confidence": "high",
+      "suggested_fix": "Cast like_count to int in the list serializer."
+    },
+    {
+      "id": "BUG-030-schema_contract",
+      "category": "schema_contract",
+      "severity": "high",
+      "endpoint": "/posts",
+      "method": "GET",
+      "title": "GET /posts returns like_count as a string",
+      "description": "Counters should be numeric. The /posts list serializer emits like_count as a string ('38'). Numeric-typed clients (TypeScript, Swift, Kotlin) will fail to deserialize, and JSON-Schema generators will mistype downstream models.",
+      "evidence": {
+        "request": {
+          "method": "GET",
+          "url": "https://backend-agent-test.onrender.com/posts",
+          "headers": {},
+          "body": null
+        },
+        "response": {
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 09 May 2026 21:19:05 GMT",
+            "Content-Type": "application/json",
+            "Content-Length": "211",
+            "Connection": "keep-alive",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-headers": "*",
+            "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS",
+            "access-control-allow-origin": "*",
+            "Content-Encoding": "br",
+            "rndr-id": "f9b453c5-e787-42fc",
+            "Server": "cloudflare",
+            "vary": "Accept-Encoding",
+            "x-render-origin-server": "uvicorn",
+            "cf-cache-status": "DYNAMIC",
+            "CF-RAY": "9f93bd8c5b6cd77b-NRT",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "body": [
+            {
+              "id": 2,
+              "author_id": 1,
+              "body": "Test post content",
+              "created_at": "2026-05-01T12:00:00Z",
+              "like_count": "38",
+              "author": "alice"
+            },
+            {
+              "id": 3,
+              "author_id": 2,
+              "body": "REPRO PATCH FROM ALICE",
+              "created_at": "2026-05-01T12:00:00Z",
+              "like_count": "0",
+              "author": "bob"
+            },
+            {
+              "id": 4,
+              "author_id": 2,
+              "body": "Bob loves coffee",
+              "created_at": "2026-05-01T12:00:00Z",
+              "like_count": "0",
+              "author": "bob"
+            },
+            {
+              "id": 5,
+              "author_id": 3,
+              "body": "Carol here, just joined",
+              "created_at": "2026-05-01T12:00:00Z",
+              "like_count": "0",
+              "author": "carol"
+            },
+            {
+              "id": 6,
+              "author_id": 1,
+              "body": "",
+              "created_at": "2026-05-06T12:00:00Z",
+              "like_count": "0",
+              "author": "alice"
+            }
+          ],
+          "elapsed_ms": 232.8
+        }
+      },
+      "reproduction": "curl $BASE/posts | jq \".[0].like_count | type\"",
+      "expected": "\"number\"",
+      "actual": "\"string\"",
+      "confidence": "high",
+      "suggested_fix": "Cast like_count to int in the list serializer (likely a SQL COUNT() returning a varchar)."
+    }
+  ]
+}

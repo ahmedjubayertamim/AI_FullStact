@@ -1,0 +1,120 @@
+[2026-05-09T21:18:29.683952+00:00] === bootstrapping users ===
+[2026-05-09T21:18:30.589055+00:00] POST /auth/login → 401 (905ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:31.348786+00:00] POST /auth/register → 201 (759ms) {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzAiLCJpYXQiOjE3NzgzNjE1MTEsImV4cCI6MTc3ODM2NTExMX0.I-
+[2026-05-09T21:18:31.348951+00:00] Registered fallback user 'alice_3ea4c7a8'
+[2026-05-09T21:18:31.584714+00:00] GET /users/me → 200 (236ms) {"id":230,"username":"alice_3ea4c7a8","email":"alice_3ea4c7a8@example.test","age":null,"role":"user","bio":""}
+[2026-05-09T21:18:32.358791+00:00] POST /auth/login → 200 (774ms) {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzc4MzYxNTEyLCJleHAiOjE3NzgzNjUxMTJ9.a8FvL
+[2026-05-09T21:18:32.358879+00:00] Logged in seeded user 'bob'
+[2026-05-09T21:18:32.601193+00:00] GET /users/me → 200 (242ms) {"id":2,"username":"bob","email":"bob@example.com","age":-5,"role":"admin","bio":"IDOR test"}
+[2026-05-09T21:18:33.317888+00:00] POST /auth/login → 200 (717ms) {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzc4MzYxNTEzLCJleHAiOjE3NzgzNjUxMTN9.LLyD-
+[2026-05-09T21:18:33.317938+00:00] Logged in seeded user 'carol'
+[2026-05-09T21:18:33.561069+00:00] GET /users/me → 200 (243ms) {"id":3,"username":"carol","email":"carol@example.com","age":25,"role":"user","bio":"Hi, I'm carol."}
+[2026-05-09T21:18:33.561228+00:00] === probe: headers / CORS ===
+[2026-05-09T21:18:33.803298+00:00] GET / → 200 (242ms) {"name":"Mini Social API","version":"1.0.0"}
+[2026-05-09T21:18:33.803565+00:00] === probe: endpoint existence (undocumented + docs leak) ===
+[2026-05-09T21:18:34.043273+00:00] GET /admin → 404 (240ms) {"detail":"Not Found"}
+[2026-05-09T21:18:34.287013+00:00] GET /admin/users → 404 (244ms) {"detail":"Not Found"}
+[2026-05-09T21:18:34.528106+00:00] GET /debug → 404 (241ms) {"detail":"Not Found"}
+[2026-05-09T21:18:34.759167+00:00] GET /metrics → 404 (231ms) {"detail":"Not Found"}
+[2026-05-09T21:18:35.001551+00:00] GET /health → 404 (242ms) {"detail":"Not Found"}
+[2026-05-09T21:18:35.242680+00:00] GET /healthz → 404 (241ms) {"detail":"Not Found"}
+[2026-05-09T21:18:35.490281+00:00] GET /ready → 404 (247ms) {"detail":"Not Found"}
+[2026-05-09T21:18:35.731131+00:00] GET /status → 404 (241ms) {"detail":"Not Found"}
+[2026-05-09T21:18:35.971875+00:00] GET /users → 404 (241ms) {"detail":"Not Found"}
+[2026-05-09T21:18:36.201388+00:00] GET /posts/feed → 422 (229ms) {"detail":[{"type":"int_parsing","loc":["path","post_id"],"msg":"Input should be a valid integer, unable to parse string
+[2026-05-09T21:18:36.534033+00:00] GET /.env → 404 (332ms) {"detail":"Not Found"}
+[2026-05-09T21:18:36.778590+00:00] GET /v1/users → 404 (244ms) {"detail":"Not Found"}
+[2026-05-09T21:18:37.009286+00:00] GET /api/users → 404 (230ms) {"detail":"Not Found"}
+[2026-05-09T21:18:37.256013+00:00] GET /openapi.json → 200 (246ms) {"openapi":"3.1.0","info":{"title":"Mini Social API","description":"A small social-media API used as a backend testing e
+[2026-05-09T21:18:37.504134+00:00] GET /docs → 200 (248ms)      <!DOCTYPE html>     <html>     <head>     <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm
+[2026-05-09T21:18:37.738901+00:00] GET /redoc → 200 (234ms)      <!DOCTYPE html>     <html>     <head>     <title>Mini Social API - ReDoc</title>     <!-- needed for adaptive desig
+[2026-05-09T21:18:37.739115+00:00] === probe: status codes & schema contracts ===
+[2026-05-09T21:18:38.571943+00:00] POST /auth/register → 201 (833ms) {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzEiLCJpYXQiOjE3NzgzNjE1MTgsImV4cCI6MTc3ODM2NTExOH0.jM
+[2026-05-09T21:18:39.442285+00:00] POST /auth/login → 200 (870ms) {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzAiLCJpYXQiOjE3NzgzNjE1MTksImV4cCI6MTc3ODM2NTExOX0.i7
+[2026-05-09T21:18:39.700186+00:00] GET /users/me → 200 (258ms) {"id":230,"username":"alice_3ea4c7a8","email":"alice_3ea4c7a8@example.test","age":null,"role":"user","bio":""}
+[2026-05-09T21:18:39.951008+00:00] GET /posts → 200 (251ms) [{"id":2,"author_id":1,"body":"Test post content","created_at":"2026-05-01T12:00:00Z","like_count":"38","author":"alice"
+[2026-05-09T21:18:40.200173+00:00] POST /posts → 201 (249ms) {"id":340,"author_id":230,"body":"agent-test post body","like_count":0,"author":"alice_3ea4c7a8"}
+[2026-05-09T21:18:40.444555+00:00] POST /posts/340/comments → 201 (244ms) {"id":101,"post_id":340,"author_id":230,"body":"agent comment"}
+[2026-05-09T21:18:40.688000+00:00] POST /posts/340/like → 200 (243ms) {"detail":"liked","like_count":1}
+[2026-05-09T21:18:40.932045+00:00] DELETE /posts/340/like → 200 (244ms) {"detail":"unliked","like_count":0}
+[2026-05-09T21:18:41.174085+00:00] DELETE /posts/340/like → 200 (242ms) {"detail":"unliked","like_count":0}
+[2026-05-09T21:18:41.415320+00:00] GET /posts/340 → 200 (241ms) {"id":340,"author_id":230,"body":"agent-test post body","created_at":"2026-05-06T12:00:00Z","like_count":0,"authorName":
+[2026-05-09T21:18:41.650077+00:00] GET /posts/340/comments → 200 (234ms) [{"id":101,"post_id":340,"author_id":230,"body":"agent comment"}]
+[2026-05-09T21:18:41.904461+00:00] POST /users/2/follow → 200 (254ms) {"detail":"followed"}
+[2026-05-09T21:18:42.154982+00:00] DELETE /users/2/follow → 200 (250ms) {"detail":"unfollowed"}
+[2026-05-09T21:18:42.398822+00:00] GET /users/2 → 200 (244ms) {"id":2,"username":"bob","bio":"IDOR test"}
+[2026-05-09T21:18:42.399045+00:00] === probe: authentication ===
+[2026-05-09T21:18:42.641075+00:00] GET /users/me → 401 (242ms) {"detail":"Missing bearer token"}
+[2026-05-09T21:18:42.885344+00:00] GET /users/me → 401 (244ms) {"detail":"Invalid token"}
+[2026-05-09T21:18:43.127090+00:00] GET /users/me → 401 (242ms) {"detail":"Missing bearer token"}
+[2026-05-09T21:18:43.368540+00:00] POST /auth/logout → 200 (241ms) {"detail":"logged out"}
+[2026-05-09T21:18:43.612153+00:00] GET /users/me → 200 (243ms) {"id":230,"username":"alice_3ea4c7a8","email":"alice_3ea4c7a8@example.test","age":null,"role":"user","bio":""}
+[2026-05-09T21:18:44.318176+00:00] POST /auth/login → 401 (705ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:44.547381+00:00] POST /auth/login → 401 (229ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:44.547513+00:00] === probe: authorization & business logic ===
+[2026-05-09T21:18:44.780209+00:00] POST /posts → 201 (233ms) {"id":341,"author_id":230,"body":"alice post c01209","like_count":0,"author":"alice_3ea4c7a8"}
+[2026-05-09T21:18:45.039209+00:00] PATCH /posts/341 → 200 (259ms) {"id":341,"author_id":230,"body":"owned by bob","created_at":"2026-05-06T12:00:00Z","like_count":0,"author":"alice_3ea4c
+[2026-05-09T21:18:45.283673+00:00] DELETE /posts/341 → 403 (244ms) {"detail":"not your post"}
+[2026-05-09T21:18:45.526557+00:00] POST /posts → 201 (243ms) {"id":342,"author_id":230,"body":"alice post v2 378f17","like_count":0,"author":"alice_3ea4c7a8"}
+[2026-05-09T21:18:45.779055+00:00] PATCH /users/me → 200 (252ms) {"id":230,"username":"alice_3ea4c7a8","email":"hacker@example.com","password_hash":"$2b$12$YqWIGzLlnT5yY6QQ2dMNsuEJVCBNn
+[2026-05-09T21:18:46.036377+00:00] GET /users/me → 200 (257ms) {"id":230,"username":"alice_3ea4c7a8","email":"hacker@example.com","age":null,"role":"admin","bio":""}
+[2026-05-09T21:18:46.280376+00:00] POST /users/230/follow → 200 (244ms) {"detail":"followed"}
+[2026-05-09T21:18:46.525515+00:00] POST /posts/342/like → 200 (245ms) {"detail":"liked","like_count":1}
+[2026-05-09T21:18:46.767814+00:00] POST /posts/342/like → 200 (242ms) {"detail":"liked","like_count":2}
+[2026-05-09T21:18:47.008476+00:00] GET /posts/342 → 200 (240ms) {"id":342,"author_id":230,"body":"alice post v2 378f17","created_at":"2026-05-06T12:00:00Z","like_count":2,"authorName":
+[2026-05-09T21:18:47.257752+00:00] DELETE /users/2/follow → 200 (249ms) {"detail":"unfollowed"}
+[2026-05-09T21:18:47.490501+00:00] POST /posts/999999999/comments → 404 (233ms) {"detail":"post not found"}
+[2026-05-09T21:18:47.736879+00:00] POST /posts/999999999/like → 200 (246ms) {"detail":"liked"}
+[2026-05-09T21:18:47.976165+00:00] POST /users/999999999/follow → 404 (239ms) {"detail":"user not found"}
+[2026-05-09T21:18:47.976349+00:00] === probe: input validation ===
+[2026-05-09T21:18:48.208159+00:00] POST /posts → 422 (232ms) {"detail":"body required"}
+[2026-05-09T21:18:48.442398+00:00] POST /posts → 201 (234ms) {"id":343,"author_id":230,"body":12345,"like_count":0,"author":"alice_3ea4c7a8"}
+[2026-05-09T21:18:48.691483+00:00] POST /posts/340/comments → 422 (249ms) {"detail":[{"type":"string_too_long","loc":["body","body"],"msg":"String should have at most 500 characters","input":"xx
+[2026-05-09T21:18:48.922676+00:00] POST /posts/340/comments → 422 (231ms) {"detail":[{"type":"string_too_short","loc":["body","body"],"msg":"String should have at least 1 character","input":"","
+[2026-05-09T21:18:49.176826+00:00] GET /posts/-1 → 404 (254ms) {"detail":"post not found"}
+[2026-05-09T21:18:49.422743+00:00] GET /posts → 500 (246ms) Internal Server Error
+[2026-05-09T21:18:49.655131+00:00] PATCH /users/me → 200 (232ms) {"id":230,"username":"alice_3ea4c7a8","email":"hacker@example.com","password_hash":"$2b$12$YqWIGzLlnT5yY6QQ2dMNsuEJVCBNn
+[2026-05-09T21:18:49.897781+00:00] GET /users/me → 200 (242ms) {"id":230,"username":"alice_3ea4c7a8","email":"hacker@example.com","age":-42,"role":"admin","bio":""}
+[2026-05-09T21:18:50.143221+00:00] POST /auth/register → 500 (245ms) Internal Server Error
+[2026-05-09T21:18:50.143397+00:00] === probe: error handling ===
+[2026-05-09T21:18:50.391532+00:00] POST /auth/login → 500 (248ms) Internal Server Error
+[2026-05-09T21:18:50.646741+00:00] POST /auth/login → 401 (255ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:50.892538+00:00] POST /auth/register → 400 (246ms) {"detail":"username and password required"}
+[2026-05-09T21:18:51.136892+00:00] GET /posts/notanint → 422 (244ms) {"detail":[{"type":"int_parsing","loc":["path","post_id"],"msg":"Input should be a valid integer, unable to parse string
+[2026-05-09T21:18:51.137080+00:00] === probe: rate limiting ===
+[2026-05-09T21:18:51.844590+00:00] POST /auth/login → 401 (704ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:52.857226+00:00] POST /auth/login → 401 (1716ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:53.421932+00:00] POST /auth/login → 401 (2282ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:55.433379+00:00] POST /auth/login → 401 (4289ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:55.940959+00:00] POST /auth/login → 401 (4796ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:56.435998+00:00] POST /auth/login → 401 (5290ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:57.974344+00:00] POST /auth/login → 401 (6824ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:57.975472+00:00] POST /auth/login → 401 (6824ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:57.976766+00:00] POST /auth/login → 401 (6823ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:57.976840+00:00] POST /auth/login → 401 (6132ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:57.978116+00:00] POST /auth/login → 401 (6829ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:57.978691+00:00] POST /auth/login → 401 (5121ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:58.484550+00:00] POST /auth/login → 401 (5062ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:59.507896+00:00] POST /auth/login → 401 (3072ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:59.508367+00:00] POST /auth/login → 401 (4075ms) {"detail":"invalid credentials"}
+[2026-05-09T21:18:59.508893+00:00] POST /auth/login → 401 (3568ms) {"detail":"invalid credentials"}
+[2026-05-09T21:19:01.564473+00:00] POST /auth/login → 401 (3585ms) {"detail":"invalid credentials"}
+[2026-05-09T21:19:01.565452+00:00] POST /auth/login → 401 (3586ms) {"detail":"invalid credentials"}
+[2026-05-09T21:19:01.567763+00:00] POST /auth/login → 401 (3592ms) {"detail":"invalid credentials"}
+[2026-05-09T21:19:01.569120+00:00] POST /auth/login → 401 (3590ms) {"detail":"invalid credentials"}
+[2026-05-09T21:19:01.569944+00:00] === probe: performance ===
+[2026-05-09T21:19:02.375945+00:00] POST /auth/login → 200 (806ms) {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzAiLCJpYXQiOjE3NzgzNjE1NDIsImV4cCI6MTc3ODM2NTE0Mn0.zw
+[2026-05-09T21:19:03.121011+00:00] POST /auth/login → 200 (745ms) {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzAiLCJpYXQiOjE3NzgzNjE1NDMsImV4cCI6MTc3ODM2NTE0M30.Lr
+[2026-05-09T21:19:03.911793+00:00] POST /auth/login → 200 (791ms) {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzAiLCJpYXQiOjE3NzgzNjE1NDMsImV4cCI6MTc3ODM2NTE0M30.Lr
+[2026-05-09T21:19:04.187804+00:00] GET /posts → 200 (275ms) [{"id":2,"author_id":1,"body":"Test post content","created_at":"2026-05-01T12:00:00Z","like_count":"38","author":"alice"
+[2026-05-09T21:19:04.419385+00:00] GET /posts → 200 (231ms) [{"id":2,"author_id":1,"body":"Test post content","created_at":"2026-05-01T12:00:00Z","like_count":"38","author":"alice"
+[2026-05-09T21:19:04.419772+00:00] === probe: HTTP protocol ===
+[2026-05-09T21:19:04.648092+00:00] OPTIONS /posts → 405 (228ms) {"detail":"Method Not Allowed"}
+[2026-05-09T21:19:04.937388+00:00] HEAD /posts → 405 (289ms) 
+[2026-05-09T21:19:05.193894+00:00] GET /posts → 200 (256ms) [{"id":2,"author_id":1,"body":"Test post content","created_at":"2026-05-01T12:00:00Z","like_count":"38","author":"alice"
+[2026-05-09T21:19:05.426250+00:00] PUT /posts → 405 (232ms) {"detail":"Method Not Allowed"}
+[2026-05-09T21:19:05.426375+00:00] === probe: documentation drift ===
+[2026-05-09T21:19:05.426436+00:00] === probe: consistency ===
+[2026-05-09T21:19:05.659355+00:00] GET /posts → 200 (233ms) [{"id":2,"author_id":1,"body":"Test post content","created_at":"2026-05-01T12:00:00Z","like_count":"38","author":"alice"
+[2026-05-09T21:19:05.890787+00:00] GET /posts/2 → 200 (231ms) {"id":2,"author_id":1,"body":"Test post content","created_at":"2026-05-01T12:00:00Z","like_count":38,"authorName":"alice
+[2026-05-09T21:19:05.898967+00:00] Wrote report to /Users/nafiurrahman/Downloads/Testing Agent/report.json with 30 findings
